@@ -1,0 +1,74 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}AgroSismo{% endblock %}</title>
+  <meta name="theme-color" content="#2f6f3e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AgroSismo">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="{% url 'manifest' %}">
+  <link rel="icon" href="{% static 'pwa/icono-192.png' %}?v=2">
+  <link rel="apple-touch-icon" href="{% static 'pwa/icono-192.png' %}?v=2">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=13">
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}?v=18">
+  <link rel="stylesheet" href="{% static 'css/formularios.css' %}?v=13">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_clase %}{% if user.is_authenticated %}app{% endif %}{% endblock %}">
+  {% include "includes/iconos.html" %}
+  {% block encabezado %}
+  {% with n=request.resolver_match.url_name|default:"" %}
+  <header class="barra">
+    <a class="marca" href="{% if user.is_authenticated %}{% url 'inicio' %}{% else %}{% url 'landing' %}{% endif %}">
+      <img src="{% static 'pwa/icono-192.png' %}?v=2" alt="" width="30" height="30"> AgroSismo
+    </a>
+    {% if user.is_authenticated %}
+    <nav class="nav-principal" aria-label="Principal">
+      <a class="enlace-barra{% if n == 'inicio' %} activo{% endif %}" href="{% url 'inicio' %}"><svg class="ic"><use href="#i-home"/></svg><span>Inicio</span></a>
+      <a class="enlace-barra{% if 'unidad' in n or 'cultivo' in n %} activo{% endif %}" href="{% url 'unidades' %}"><svg class="ic"><use href="#i-campo"/></svg><span>Mis unidades</span></a>
+      <a class="enlace-barra{% if 'evento' in n or 'afectacion' in n or 'evidencia' in n %} activo{% endif %}" href="{% url 'eventos' %}"><svg class="ic"><use href="#i-sismo"/></svg><span>Sismos</span></a>
+      <a class="enlace-barra{% if n == 'historial' %} activo{% endif %}" href="{% url 'historial' %}"><svg class="ic"><use href="#i-historial"/></svg><span>Historial</span></a>
+      <a class="enlace-barra{% if 'reporte' in n %} activo{% endif %}" href="{% url 'reporte' %}"><svg class="ic"><use href="#i-reporte"/></svg><span>Reportes</span></a>
+      {% if user.es_admin %}<a class="enlace-barra{% if 'usuario' in n or n == 'actividad' %} activo{% endif %}" href="{% url 'usuarios' %}"><svg class="ic"><use href="#i-usuarios"/></svg><span>Usuarios</span></a>{% endif %}
+    {% if user.es_desarrollador %}<a class="enlace-barra{% if 'finca' in n %} activo{% endif %}" href="{% url 'fincas' %}"><svg class="ic"><use href="#i-pin"/></svg><span>Fincas</span></a>{% endif %}
+    </nav>
+    <div class="usuario">
+      <a class="boton-ayuda" href="{% url 'ayuda' %}" title="Ayuda" aria-label="Ayuda"><svg class="ic"><use href="#i-ayuda"/></svg></a>
+      <span class="avatar" title="{{ user.username }}">{{ user.username|slice:":1"|upper }}</span>
+      <form method="post" action="{% url 'logout' %}" class="en-linea">
+        {% csrf_token %}
+        <button type="submit" class="boton boton-claro boton-salir"><svg class="ic"><use href="#i-salir"/></svg><span>Cerrar sesión</span></button>
+      </form>
+    </div>
+    {% else %}
+    <nav class="nav-publica"><a class="boton-ayuda" href="{% url 'ayuda' %}" title="Ayuda" aria-label="Ayuda"><svg class="ic"><use href="#i-ayuda"/></svg></a><a class="boton boton-claro" href="{% url 'login' %}">Iniciar sesión</a></nav>
+    {% endif %}
+  </header>
+  {% endwith %}
+  {% endblock %}
+
+  <main class="{% block clase_main %}contenedor{% endblock %}">
+    {% if messages %}
+      <ul class="mensajes">
+        {% for m in messages %}<li class="mensaje {{ m.tags }}"><span>{{ m }}</span><button type="button" class="cerrar" aria-label="Cerrar mensaje">×</button></li>{% endfor %}
+      </ul>
+    {% endif %}
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer class="pie">AgroSismo · Registro de afectaciones sísmicas en el sector agrícola</footer>
+  <script src="{% static 'js/panel.js' %}?v=12" defer></script>
+  <script src="{% static 'js/formato.js' %}?v=1" defer></script>
+  <script src="{% static 'js/offline.js' %}" defer></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("{% url 'sw' %}", { scope: "/" }).catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>

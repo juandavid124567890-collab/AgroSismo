@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block titulo %}Eliminar {{ finca.nombre }} · AgroSismo{% endblock %}
+
+{% block contenido %}
+<a class="volver" href="{% url 'finca_detalle' finca.pk %}"><svg class="ic"><use href="#i-flecha"/></svg>Volver</a>
+
+<section class="formulario formulario-ancho">
+  <h1>Eliminar la finca «{{ finca.nombre }}»</h1>
+
+  <div class="aviso aviso-peligro" role="alert">
+    <strong>Esta acción no se puede deshacer.</strong>
+    Se borrará todo lo que pertenece a esta finca:
+    <ul>
+      <li>{{ datos.usuarios }} usuario{{ datos.usuarios|pluralize }}</li>
+      <li>{{ datos.unidades }} unidad{{ datos.unidades|pluralize:"es" }} agrícola{{ datos.unidades|pluralize }} y sus cultivos</li>
+      <li>{{ datos.sismos }} sismo{{ datos.sismos|pluralize }} registrado{{ datos.sismos|pluralize }}</li>
+      <li>{{ datos.afectaciones }} afectaci{{ datos.afectaciones|pluralize:"ón,ones" }} con sus pérdidas</li>
+      <li>{{ datos.fotos }} fotograf{{ datos.fotos|pluralize:"ía,ías" }}</li>
+      <li>{{ datos.reportes }} reporte{{ datos.reportes|pluralize }} generado{{ datos.reportes|pluralize }}</li>
+    </ul>
+  </div>
+
+  <p>¿Solo se retiran por un tiempo? Mejor <a href="{% url 'finca_detalle' finca.pk %}">desactiva la finca</a>: sus usuarios no podrán ingresar, pero nada se pierde.</p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="campo{% if form.confirmacion.errors %} tiene-error{% endif %}">
+      <label for="id_confirmacion">Para confirmar, escribe exactamente: <strong>{{ finca.nombre }}</strong></label>
+      <input type="text" name="confirmacion" id="id_confirmacion" autocomplete="off" required>
+      {% for e in form.confirmacion.errors %}<div class="error-campo" role="alert">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="acciones acciones-fijas">
+      <button type="submit" class="boton peligro peligro-solido">Sí, eliminar todo</button>
+      <a class="boton boton-secundario" href="{% url 'finca_detalle' finca.pk %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

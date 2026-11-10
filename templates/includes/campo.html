@@ -1,0 +1,6 @@
+<div class="campo{% if campo.errors %} tiene-error{% endif %}">
+  <label for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %} <span class="req" aria-hidden="true">*</span>{% elif marcar_opcional and campo.field.widget.input_type != "checkbox" %} <span class="opc">(opcional)</span>{% endif %}</label>
+  {{ campo }}
+  {% if campo.help_text %}<small class="suave ayuda">{{ campo.help_text }}</small>{% endif %}
+  {% for e in campo.errors %}<div class="error-campo" role="alert">{{ e }}</div>{% endfor %}
+</div>

@@ -1,0 +1,91 @@
+/* Formularios y pantallas de detalle, pensados para el celular. */
+body.app .volver { display: inline-flex; align-items: center; gap: .3rem; margin: 0 0 .9rem; padding: .35rem .8rem .35rem .5rem; border-radius: 999px; background: #fff; border: 1px solid var(--borde); color: var(--verde-oscuro); font-weight: 600; font-size: .9rem; text-decoration: none; max-width: 100%; }
+body.app .volver .ic { transform: rotate(180deg); width: 18px; height: 18px; }
+body.app .volver:hover { border-color: var(--verde); background: var(--verde-claro); }
+
+/* Ficha de encabezado en detalles */
+.ficha { display: flex; align-items: center; gap: 1rem; background: #fff; border: 1px solid var(--borde); border-left: 5px solid var(--verde); border-radius: var(--radio); box-shadow: var(--sombra); padding: 1.1rem 1.25rem; margin-bottom: 1.1rem; }
+.ficha.s-leve { border-left-color: #4caf50; } .ficha.s-moderada { border-left-color: #f0a500; } .ficha.s-grave { border-left-color: #d32f2f; }
+.ficha-texto { flex: 1; min-width: 0; }
+.ficha-texto h1 { margin: 0 0 .35rem; font-size: 1.45rem; overflow-wrap: anywhere; }
+.ficha .chips { margin: 0; }
+
+/* Formularios */
+body.app .formulario-ancho { margin: 0 auto 1.5rem; max-width: 640px; padding: 1.5rem 1.5rem 1rem; }
+body.app .formulario h1 { margin-bottom: .25rem; }
+.nota-campos { margin: 0 0 .5rem; font-size: .88rem; }
+.req { color: var(--error); font-weight: 700; }
+body.app .formulario .campo { margin-top: 1rem; }
+body.app .formulario .campo label { margin-top: 0; }
+body.app .formulario input:not([type=checkbox]):not([type=file]), body.app .formulario select, body.app .formulario textarea { min-height: 48px; font-size: 1rem; }
+body.app .formulario textarea { min-height: 96px; }
+body.app .formulario .campo.tiene-error input, body.app .formulario .campo.tiene-error select, body.app .formulario .campo.tiene-error textarea { border-color: var(--error); background: #fffafa; }
+body.app .formulario .ayuda { display: block; margin-top: .3rem; }
+body.app .formulario .error-campo { margin-top: .3rem; }
+body.app .formulario input[type=file] { padding: .6rem; background: #fff; border: 2px dashed var(--borde); border-radius: 12px; width: 100%; }
+.vista-foto { display: block; max-width: 100%; max-height: 240px; margin-top: .75rem; border-radius: 12px; border: 1px solid var(--borde); }
+body.app .formulario .campo:has(input[type=checkbox]) label { display: flex; align-items: center; gap: .6rem; min-height: 44px; }
+
+/* Barra de acciones: queda a la vista al desplazarse (en el celular) */
+.acciones-fijas { position: sticky; bottom: 0; z-index: 5; margin: 1.5rem -1.5rem 0; padding: .85rem 1.5rem; background: linear-gradient(to bottom, rgba(255,255,255,0), #fff 28%); border-radius: 0 0 var(--radio) var(--radio); }
+.acciones-fijas .boton { flex: 1; min-height: 48px; }
+
+/* Detalles */
+body.app .datos dt { font-size: .85rem; }
+body.app .datos dd { overflow-wrap: anywhere; }
+body.app .fila { min-height: 52px; }
+.enlace-accion { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .5rem; font-weight: 600; }
+.perdida { display: flex; justify-content: space-between; gap: 1rem; margin: .4rem 0; padding: .6rem .9rem; background: var(--verde-claro); border-radius: 12px; }
+body.app .enlace-boton { min-height: 40px; padding: .2rem .1rem; }
+body.app .foto figcaption { margin-top: .35rem; }
+
+@media (max-width: 860px) {
+  body.app .acciones-fijas { bottom: 66px; } /* por encima de la barra de navegación inferior */
+}
+@media (max-width: 560px) {
+  body.app .formulario-ancho { padding: 1.1rem 1rem .75rem; border-radius: 14px; }
+  .acciones-fijas { margin: 1.25rem -1rem 0; padding: .75rem 1rem; }
+  .acciones-fijas .boton { flex: 1 1 45%; }
+  .ficha { flex-wrap: wrap; padding: 1rem; }
+  .ficha-texto h1 { font-size: 1.25rem; }
+  .ficha > .boton { width: 100%; }
+  body.app .datos { grid-template-columns: 1fr; gap: .1rem; }
+  body.app .datos dd { margin-bottom: .7rem; padding-bottom: .7rem; border-bottom: 1px solid #edf2ee; }
+  body.app .datos dd:last-child { border-bottom: 0; margin-bottom: 0; }
+  body.app .tarjeta .encabezado .boton { width: 100%; }
+  body.app .galeria { grid-template-columns: repeat(2, 1fr); }
+  .perdida { flex-direction: column; gap: .15rem; }
+}
+
+/* ---- Gestión de usuarios ---- */
+.avatar.grande { width: 46px; height: 46px; font-size: 1.15rem; flex: none; }
+.usuario-fila { display: flex; align-items: center; gap: 1rem; background: #fff; border: 1px solid var(--borde); border-radius: var(--radio); box-shadow: var(--sombra); padding: 1rem 1.15rem; margin-bottom: .75rem; }
+.usuario-fila.inactivo { opacity: .75; background: #f7f8f7; }
+.usuario-datos { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .15rem; }
+.usuario-datos .suave { overflow-wrap: anywhere; }
+.usuario-acciones { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+.usuario-acciones form { margin: 0; }
+.usuario-acciones .boton { padding: .5rem .9rem; font-size: .88rem; min-height: 40px; }
+body.app .boton.peligro { color: var(--error); border-color: #f3b8b3; }
+body.app .boton.peligro:hover { background: #fdecea; border-color: var(--error); }
+body.app .mensaje.clave { border-left-color: #e0a100; background: #fffbea; }
+body.app .mensaje .copiar { align-self: center; background: var(--verde); color: #fff; border: 0; border-radius: 8px; padding: .3rem .7rem; font-weight: 700; cursor: pointer; }
+body.app .mensaje span { overflow-wrap: anywhere; }
+@media (max-width: 860px) {
+  .usuario-fila { flex-wrap: wrap; }
+  .usuario-acciones { width: 100%; justify-content: flex-start; }
+}
+
+/* Menú superior con la pestaña extra del administrador */
+body.app .enlace-barra { white-space: nowrap; }
+@media (min-width: 861px) and (max-width: 1180px) {
+  body.app .enlace-barra { padding: .5rem .6rem; font-size: .88rem; gap: .3rem; }
+  body.app .boton-salir span { display: none; }
+  body.app .boton-salir { padding: .5rem; }
+}
+
+.solicitudes { border-left: 5px solid #e0a100; background: #fffbea; }
+.solicitudes .fila { gap: 1rem; flex-wrap: wrap; align-items: center; }
+
+/* Marca de campo opcional */
+.opc { color: var(--suave); font-weight: 400; font-size: .82rem; }

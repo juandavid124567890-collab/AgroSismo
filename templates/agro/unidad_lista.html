@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load formato %}
+
+{% block titulo %}Mis unidades agrícolas · AgroSismo{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>Mis unidades agrícolas
+    <small>Mostrando <span id="cuenta">{{ unidades|length }}</span> de {{ unidades|length }}</small></h1>
+  <a class="boton" href="{% url 'unidad_crear' %}"><svg class="ic"><use href="#i-mas"/></svg>Nueva unidad</a>
+</div>
+
+<form method="get" class="buscador" role="search">
+  <svg class="ic"><use href="#i-buscar"/></svg>
+  <input type="search" name="q" value="{{ q }}" placeholder="Buscar unidad..." aria-label="Buscar unidad"
+         data-filtrar="#lista-unidades" data-vacio="#sin-resultados" data-cuenta="#cuenta" autocomplete="off">
+</form>
+
+<div class="rejilla" id="lista-unidades">
+  {% for u in unidades %}
+    <a class="item" href="{% url 'unidad_detalle' u.pk %}" data-buscar="{{ u.nombre }} {{ u.municipio }} {{ u.departamento }}">
+      <span class="item-icono"><svg class="ic"><use href="#i-campo"/></svg></span>
+      <span class="item-cuerpo">
+        <strong>{{ u.nombre }}</strong>
+        <span class="suave">{% if u.municipio or u.departamento %}{{ u.municipio }}{% if u.municipio and u.departamento %}, {% endif %}{{ u.departamento }}{% else %}Ubicación sin registrar{% endif %}</span>
+        <span class="chips">
+          <span class="chip">{{ u.area_ha|ha }} ha</span>
+          <span class="chip">{{ u.num_cultivos }} cultivo{{ u.num_cultivos|pluralize }}</span>
+        </span>
+      </span>
+      <svg class="ic ir"><use href="#i-flecha"/></svg>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="vacio" id="sin-resultados"{% if unidades %} hidden{% endif %}>
+  <span class="item-icono"><svg class="ic"><use href="#i-campo"/></svg></span>
+  {% if q or unidades %}
+    <p>No se encontraron unidades con ese nombre.</p>
+  {% else %}
+    <p>Todavía no tienes unidades agrícolas. Crea la primera con el botón "Nueva unidad".</p>
+    <a class="boton" href="{% url 'unidad_crear' %}">Crear mi primera unidad</a>
+  {% endif %}
+</div>
+{% endblock %}

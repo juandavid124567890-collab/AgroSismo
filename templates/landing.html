@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}AgroSismo · Registro de afectaciones sísmicas en el campo{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/landing.css' %}?v=4">{% endblock %}
+{% block clase_main %}pub{% endblock %}
+
+{% block encabezado %}
+<header class="pub-barra">
+  <div class="pub-ancho pub-barra-fila">
+    <a class="pub-marca" href="{% url 'landing' %}">
+      <img src="{% static 'pwa/icono-192.png' %}?v=2" alt="" width="40" height="40"> AgroSismo
+    </a>
+    <nav class="pub-nav" aria-label="Secciones">
+      <a href="#sismo">¿Qué es un sismo?</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#funciones">Funciones</a>
+      <a href="#empezar">Cómo empezar</a>
+      <a href="#preguntas">Preguntas</a>
+      <a href="{% url 'ayuda' %}">Ayuda</a>
+    </nav>
+    <a class="pub-boton pub-boton-chico pub-boton-claro" href="{% url 'login' %}">Iniciar sesión</a>
+  </div>
+</header>
+{% endblock %}
+
+{% block contenido %}
+<section class="pub-hero">
+  <div class="pub-ancho pub-hero-fila">
+    <div class="pub-hero-texto">
+      <span class="pub-etiqueta">Registro de afectaciones sísmicas agrícolas</span>
+      <h1>Anota los daños que dejó el sismo en tu finca</h1>
+      <p>Anota los daños en tus cultivos, terrenos e infraestructura, guarda fotografías como evidencia, estima tus pérdidas y genera reportes. Todo en un solo lugar, desde tu celular o computador.</p>
+      <div class="pub-botones">
+        <a class="pub-boton" href="{{ whatsapp_url }}" target="_blank" rel="noopener">Quiero usar AgroSismo</a>
+        <a class="pub-boton pub-boton-claro" href="#como">Ver cómo funciona</a>
+      </div>
+      <ul class="pub-datos">
+        <li><strong>10</strong> fotos por afectación</li>
+        <li><strong>PDF</strong> listo para entregar</li>
+        <li><strong>Privado</strong> solo tú ves tus datos</li>
+      </ul>
+      <p class="pub-nota-ingreso">¿Ya tienes cuenta? <a href="{% url 'login' %}">Iniciar sesión</a></p>
+    </div>
+
+    <div class="pub-visor" role="region" aria-roledescription="carrusel" aria-label="Pantallas de ejemplo de AgroSismo">
+      <span class="pub-ejemplo-nota">Pantallas de ejemplo</span>
+      <div class="pub-visor-ventana">
+        <div class="pub-visor-barra"><i></i><i></i><i></i><span>agrosismo</span></div>
+        <div class="pub-visor-marco"><div class="pub-pista">
+        <img class="pub-diapo activa" src="{% static 'landing/inicio.webp' %}?v=2" width="1200" height="760" alt="Pantalla de inicio con el resumen de unidades, sismos y pérdidas" data-leyenda="Tu resumen en un vistazo: unidades, sismos y pérdidas.">
+        <img class="pub-diapo" src="{% static 'landing/registrar.webp' %}?v=2" width="1200" height="760" alt="Formulario para registrar una afectación" loading="lazy" data-leyenda="Registra el daño con su tipo, severidad, área y pérdidas.">
+        <img class="pub-diapo" src="{% static 'landing/historial.webp' %}?v=2" width="1200" height="760" alt="Historial de afectaciones con filtros" loading="lazy" data-leyenda="Encuentra cualquier registro filtrando por fecha, unidad o severidad.">
+        <img class="pub-diapo" src="{% static 'landing/reporte.webp' %}?v=2" width="1200" height="760" alt="Reporte en PDF de afectaciones" loading="lazy" data-leyenda="Descarga un reporte en PDF listo para entregar.">
+        </div></div>
+        <div class="pub-progreso"><b></b></div>
+      </div>
+      <p class="pub-visor-leyenda" aria-live="polite">Tu resumen en un vistazo: unidades, sismos y pérdidas.</p>
+      <div class="pub-visor-ctrl">
+        <button type="button" class="pub-visor-flecha" data-dir="-1" aria-label="Pantalla anterior">‹</button>
+        <div class="pub-visor-puntos"></div>
+        <button type="button" class="pub-visor-flecha" data-dir="1" aria-label="Pantalla siguiente">›</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pub-seccion" id="sismo">
+  <div class="pub-ancho pub-dos">
+    <div>
+      <span class="pub-etiqueta">Para entender el problema</span>
+      <h2>¿Qué es un evento sísmico y cómo afecta el campo?</h2>
+      <p>Un sismo es un movimiento brusco del terreno. Aunque sea moderado, sus ondas pueden desestabilizar canales de riego, alterar el flujo de agua subterránea y agrietar suelos fértiles, afectando directamente la raíz de tus siembras.</p>
+      <p>Los daños no siempre se ven el mismo día. Registrarlos con fecha, finca y fotografías te da un historial claro para reclamar apoyo o tomar decisiones.</p>
+    </div>
+    <div class="pub-tarjeta">
+      <h3>Tipos de daño que puedes registrar</h3>
+      <ul class="pub-chips">
+        <li>Deslizamiento</li><li>Grietas</li><li>Hundimiento</li><li>Inundación</li><li>Otro</li>
+      </ul>
+      <h3>Qué puede resultar afectado</h3>
+      <ul class="pub-chips">
+        <li>Cultivos</li><li>Terreno</li><li>Vías de acceso</li><li>Infraestructura</li><li>Riego</li>
+      </ul>
+      <h3>Nivel de severidad</h3>
+      <ul class="pub-chips pub-sevs">
+        <li class="leve">Leve</li><li class="mod">Moderada</li><li class="grave">Grave</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="pub-seccion pub-fondo" id="como">
+  <div class="pub-ancho">
+    <div class="pub-centro">
+      <span class="pub-etiqueta">Cómo funciona</span>
+      <h2>Reporta una afectación en cuatro pasos</h2>
+    </div>
+    <ol class="pub-pasos">
+      <li><span>1</span><h3>Registra tu finca</h3><p>Crea tus unidades agrícolas con su área y ubicación, y los cultivos que tiene cada una.</p></li>
+      <li><span>2</span><h3>Anota el sismo</h3><p>Indica la fecha, la hora y, si la conoces, la magnitud del evento que sentiste.</p></li>
+      <li><span>3</span><h3>Describe los daños</h3><p>Elige el tipo de daño y su severidad, mide el área, sube fotos y estima la pérdida.</p></li>
+      <li><span>4</span><h3>Consulta y exporta</h3><p>Filtra tu historial por fecha, finca o severidad y descarga un reporte en PDF.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="pub-seccion" id="funciones">
+  <div class="pub-ancho">
+    <div class="pub-centro">
+      <span class="pub-etiqueta">¿Qué ofrecemos?</span>
+      <h2>Lo necesario para documentar bien un daño</h2>
+    </div>
+    <div class="pub-rejilla">
+      <article class="pub-tarjeta"><span class="pub-icono">🌱</span><h3>Unidades y cultivos</h3><p>Administra varias unidades agrícolas y los cultivos de cada una.</p></article>
+      <article class="pub-tarjeta"><span class="pub-icono">📍</span><h3>Eventos sísmicos</h3><p>Guarda cada sismo con su fecha, hora, magnitud y epicentro.</p></article>
+      <article class="pub-tarjeta"><span class="pub-icono">📷</span><h3>Fotos de evidencia</h3><p>Adjunta hasta 10 fotografías por afectación como respaldo.</p></article>
+      <article class="pub-tarjeta"><span class="pub-icono">💲</span><h3>Pérdidas estimadas</h3><p>Anota la producción perdida y su valor económico aproximado.</p></article>
+      <article class="pub-tarjeta"><span class="pub-icono">🗂️</span><h3>Historial con filtros</h3><p>Encuentra cualquier registro por fecha, unidad o severidad.</p></article>
+      <article class="pub-tarjeta"><span class="pub-icono">📄</span><h3>Reportes en PDF</h3><p>Genera un resumen ordenado para presentar ante quien lo solicite.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="pub-seccion pub-fondo">
+  <div class="pub-ancho pub-dos">
+    <div class="pub-tarjeta pub-privado">
+      <h3>🔒 Tu información es solo tuya</h3>
+      <p>Cada productor ve únicamente sus propias fincas, sismos y reportes. El acceso es con usuario y contraseña, y la conexión se protege con HTTPS.</p>
+    </div>
+    <div class="pub-tarjeta pub-privado">
+      <h3>📱 Pensado para el campo</h3>
+      <p>Funciona en el navegador del celular y se puede instalar como una app. Si te quedas sin señal, puedes seguir registrando y se envía solo cuando vuelve internet.</p>
+    </div>
+  </div>
+</section>
+
+<section class="pub-seccion" id="empezar">
+  <div class="pub-ancho">
+    <div class="pub-centro">
+      <span class="pub-etiqueta">Cómo empezar</span>
+      <h2>Empieza a proteger tu finca en 3 pasos</h2>
+      <p>Para cuidar la información de cada productor, las cuentas las crea el equipo de AgroSismo. Es rápido:</p>
+    </div>
+    <ol class="pub-pasos">
+      <li><span>1</span><h3>Escríbenos</h3><p>Cuéntanos por WhatsApp que te interesa usar AgroSismo en tu finca.</p></li>
+      <li><span>2</span><h3>Creamos tu cuenta</h3><p>El equipo te registra y te entrega tu usuario y una contraseña inicial.</p></li>
+      <li><span>3</span><h3>Ingresa y registra</h3><p>Inicia sesión, anota tu finca y empieza a documentar lo que pase.</p></li>
+    </ol>
+    <p class="pub-centro"><a class="pub-boton" href="{{ whatsapp_url }}" target="_blank" rel="noopener">Escribir al equipo por WhatsApp</a></p>
+  </div>
+</section>
+
+<section class="pub-seccion pub-fondo" id="preguntas">
+  <div class="pub-ancho pub-estrecho">
+    <div class="pub-centro">
+      <span class="pub-etiqueta">Preguntas frecuentes</span>
+      <h2>Lo que más nos preguntan</h2>
+    </div>
+    <details class="pub-faq" open>
+      <summary>¿Cómo obtengo una cuenta?</summary>
+      <p>Las cuentas las crea el equipo de AgroSismo. Escríbenos por WhatsApp y te entregaremos tu usuario y una contraseña inicial.</p>
+    </details>
+    <details class="pub-faq">
+      <summary>¿AgroSismo detecta los sismos automáticamente?</summary>
+      <p>No. Tú registras los eventos que sentiste y los daños que observaste. La herramienta sirve para documentarlos, no para alertas.</p>
+    </details>
+    <details class="pub-faq">
+      <summary>¿Puedo usarlo sin internet?</summary>
+      <p>Sí. Puedes anotar sismos, daños y fotos sin señal y se envían solos cuando vuelve internet. Solo necesitas haber iniciado sesión con conexión antes.</p>
+    </details>
+    <details class="pub-faq">
+      <summary>¿Las pérdidas del reporte son oficiales?</summary>
+      <p>No. Son estimaciones registradas por el productor y no reemplazan una valoración técnica oficial.</p>
+    </details>
+  </div>
+</section>
+
+<section class="pub-cta">
+  <div class="pub-ancho">
+    <h2>Documenta hoy lo que pasó en tu finca</h2>
+    <p>Escríbenos y te ayudamos a empezar. Si ya tienes cuenta, inicia sesión.</p>
+    <a class="pub-boton pub-boton-blanco" href="{{ whatsapp_url }}" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+    <p class="pub-cta-login"><a href="{% url 'login' %}">Iniciar sesión</a></p>
+  </div>
+</section>
+<script src="{% static 'js/landing.js' %}?v=3" defer></script>
+{% endblock %}

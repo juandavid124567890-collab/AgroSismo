@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load formato %}
+
+{% block titulo %}Historial · AgroSismo{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>Historial de afectaciones
+    <small>Busca y filtra todo lo que has registrado</small></h1>
+  <a class="boton boton-secundario" href="{% url 'reporte' %}{% if querystring %}?{{ querystring }}{% endif %}"><svg class="ic"><use href="#i-reporte"/></svg>Hacer reporte</a>
+</div>
+
+{% with sev=request.GET.severidad %}
+<div class="chips-sev" aria-label="Filtro rápido por severidad">
+  <a href="{% url 'historial' %}" class="{% if not sev %}on{% endif %}">Todas</a>
+  <a href="?severidad=LEVE" data-sev="LEVE" class="{% if sev == 'LEVE' %}on{% endif %}"><i class="p-leve"></i>Leve</a>
+  <a href="?severidad=MODERADA" data-sev="MODERADA" class="{% if sev == 'MODERADA' %}on{% endif %}"><i class="p-mod"></i>Moderada</a>
+  <a href="?severidad=GRAVE" data-sev="GRAVE" class="{% if sev == 'GRAVE' %}on{% endif %}"><i class="p-grave"></i>Grave</a>
+</div>
+{% endwith %}
+
+<details class="panel-filtros"{% if request.GET %} open{% endif %}>
+  <summary><svg class="ic"><use href="#i-filtros"/></svg>Filtros</summary>
+  <form method="get" class="filtros">
+    {% if form.non_field_errors %}
+      <div class="error" role="alert">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+    <div class="filtros-campos">
+      {% for campo in form %}{% include "includes/campo.html" %}{% endfor %}
+    </div>
+    <div class="acciones">
+      <button type="submit" class="boton">Filtrar</button>
+      {% if request.GET %}
+        <a class="boton boton-secundario" href="{% url 'historial' %}">Limpiar filtros</a>
+      {% endif %}
+    </div>
+  </form>
+</details>
+
+<section class="resumen">
+  <div class="dato"><span class="numero" data-contar="{{ resumen.total }}">{{ resumen.total }}</span><span>Afectaciones</span></div>
+  <div class="dato">
+    <span class="numero">{{ resumen.valor|cop }}</span>
+    <span>Pérdidas estimadas (COP)</span>
+  </div>
+</section>
+
+{% for a in pagina %}
+  <a class="afect s-{{ a.severidad|lower }}" href="{% url 'afectacion_detalle' a.pk %}">
+    <span class="afect-top">
+      <strong>{{ a.tipo_dano_texto }} · {{ a.unidad.nombre }}</strong>
+      <span class="sev sev-{{ a.severidad|lower }}">{{ a.get_severidad_display }}</span>
+    </span>
+    <span>{{ a.evento.fecha_hora|date:"d/m/Y H:i" }} · {{ a.get_elemento_display }}</span>
+    <span class="suave">
+      {{ a.area_afectada_ha|ha }} ha{% if a.valor_perdido %} · {{ a.valor_perdido|cop }} COP{% endif %}
+    </span>
+  </a>
+{% empty %}
+  <div class="vacio">
+    <span class="item-icono"><svg class="ic"><use href="#i-historial"/></svg></span>
+    {% if request.GET %}
+      <p>No se encontraron registros con los filtros seleccionados. Intenta ajustar los criterios de búsqueda.</p>
+      <a class="boton boton-secundario" href="{% url 'historial' %}">Limpiar filtros</a>
+    {% else %}
+      <p>Todavía no hay afectaciones registradas.</p>
+      <a class="boton" href="{% url 'eventos' %}">Ir a mis sismos</a>
+    {% endif %}
+  </div>
+{% endfor %}
+
+{% if pagina.has_other_pages %}
+  <nav class="paginas">
+    {% if pagina.has_previous %}
+      <a class="boton boton-secundario" href="?{{ querystring }}{% if querystring %}&amp;{% endif %}page={{ pagina.previous_page_number }}">&larr; Anterior</a>
+    {% else %}<span></span>{% endif %}
+    <span class="suave">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}
+      <a class="boton boton-secundario" href="?{{ querystring }}{% if querystring %}&amp;{% endif %}page={{ pagina.next_page_number }}">Siguiente &rarr;</a>
+    {% else %}<span></span>{% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

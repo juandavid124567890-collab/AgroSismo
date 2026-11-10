@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ finca.nombre }} · AgroSismo{% endblock %}
+
+{% block contenido %}
+<a class="volver" href="{% url 'fincas' %}"><svg class="ic"><use href="#i-flecha"/></svg>Volver a fincas</a>
+
+<div class="encabezado">
+  <h1>{{ finca.nombre }}
+    <small>
+      {% if finca.activa %}<span class="chip est-ok">Activa</span>{% else %}<span class="chip est-error">Desactivada: sus usuarios no pueden ingresar</span>{% endif %}
+      Creada {{ finca.creada_en|date:"d/m/Y" }}
+    </small></h1>
+  <div class="acciones" style="margin:0">
+    <a class="boton boton-secundario" href="{% url 'finca_editar' finca.pk %}">Renombrar</a>
+    <a class="boton" href="{% url 'usuario_crear' %}?finca={{ finca.pk }}&amp;rol=ADMIN"><svg class="ic"><use href="#i-mas"/></svg>Añadir usuario</a>
+  </div>
+</div>
+
+<section class="est-bloque">
+  <h2>Qué tiene esta finca</h2>
+  <p class="suave">
+    {{ datos.usuarios }} usuario{{ datos.usuarios|pluralize }} ·
+    {{ datos.unidades }} unidad{{ datos.unidades|pluralize:"es" }} agrícola{{ datos.unidades|pluralize }} ·
+    {{ datos.sismos }} sismo{{ datos.sismos|pluralize }} ·
+    {{ datos.afectaciones }} afectaci{{ datos.afectaciones|pluralize:"ón,ones" }} ·
+    {{ datos.fotos }} foto{{ datos.fotos|pluralize }}
+  </p>
+</section>
+
+<h2>Usuarios de la finca</h2>
+{% for u in miembros %}
+  <article class="usuario-fila{% if not u.is_active %} inactivo{% endif %}">
+    <span class="avatar grande">{{ u.username|slice:":1"|upper }}</span>
+    <div class="usuario-datos">
+      <strong>{{ u.get_full_name|default:u.username }}</strong>
+      <span class="suave">@{{ u.username }}</span>
+      <span class="chips">
+        <span class="chip">{{ u.get_rol_display }}</span>
+        {% if u.is_active %}<span class="chip est-ok">Activa</span>{% else %}<span class="chip est-error">Desactivada</span>{% endif %}
+      </span>
+    </div>
+    <div class="usuario-acciones">
+      <a class="boton boton-secundario" href="{% url 'usuario_editar' u.pk %}">Editar</a>
+    </div>
+  </article>
+{% empty %}
+  <div class="vacio"><p>Esta finca todavía no tiene usuarios.</p></div>
+{% endfor %}
+
+<section class="est-bloque">
+  <h2>Acceso de la finca</h2>
+  <form method="post" action="{% url 'finca_estado' finca.pk %}"
+        data-confirmar="{% if finca.activa %}¿Desactivar la finca {{ finca.nombre }}? Sus usuarios no podrán ingresar, pero sus datos se conservan.{% else %}¿Activar la finca {{ finca.nombre }}?{% endif %}">
+    {% csrf_token %}
+    <button type="submit" class="boton boton-secundario {% if finca.activa %}peligro{% endif %}">{% if finca.activa %}Desactivar finca{% else %}Activar finca{% endif %}</button>
+  </form>
+  <p class="suave">Desactivarla es lo recomendable si solo se retiran por un tiempo: nada se pierde y se puede volver a activar.</p>
+</section>
+
+<section class="est-bloque zona-peligro">
+  <h2>Eliminar finca</h2>
+  <p>Si la finca no volverá a usar AgroSismo, puedes eliminarla. <strong>Se borrarán para siempre sus usuarios, unidades, sismos, afectaciones, fotos y reportes.</strong></p>
+  <a class="boton boton-secundario peligro" href="{% url 'finca_eliminar' finca.pk %}">Eliminar finca…</a>
+</section>
+{% endblock %}

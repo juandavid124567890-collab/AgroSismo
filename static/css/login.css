@@ -1,0 +1,126 @@
+/* Inicio de sesión de AgroSismo */
+.login-pagina {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(900px 500px at 10% -10%, #cfe8d4 0%, transparent 60%),
+    radial-gradient(700px 500px at 110% 110%, #b7dcc0 0%, transparent 55%),
+    var(--fondo);
+}
+
+.login {
+  display: grid; grid-template-columns: 1.05fr 1fr;
+  width: 100%; max-width: 920px; min-height: 540px;
+  background: #fff; border-radius: 22px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(31, 77, 43, 0.22);
+}
+
+/* ---- Panel verde ---- */
+.login-lado {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: 2.25rem 2rem 0;
+  color: #fff;
+  background: linear-gradient(155deg, #3b8a4d 0%, #2f6f3e 45%, #1b4326 100%);
+}
+.login-lado::before, .login-lado::after {
+  content: ""; position: absolute; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+}
+.login-lado::before { width: 280px; height: 280px; top: -90px; right: -90px; }
+.login-lado::after  { width: 200px; height: 200px; bottom: 60px; left: -80px; }
+.login-lado > * { position: relative; z-index: 1; }
+
+.login-marca { display: flex; align-items: center; gap: 0.75rem; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.2px; }
+.login-marca img { border-radius: 14px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
+
+.login-lado h2 { font-size: 1.9rem; line-height: 1.15; margin: 2.2rem 0 0.8rem; font-weight: 800; }
+.login-lado p { margin: 0; max-width: 34ch; opacity: 0.93; font-size: 1.02rem; }
+
+.login-puntos { list-style: none; margin: 1.6rem 0 0; padding: 0; display: grid; gap: 0.6rem; font-size: 0.95rem; }
+.login-puntos li { display: flex; align-items: center; gap: 0.6rem; }
+.login-puntos li::before {
+  content: "✓"; display: inline-grid; place-items: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2); font-size: 0.8rem; font-weight: 700;
+}
+
+.login-onda { margin-top: auto; width: calc(100% + 4rem); margin-left: -2rem; height: 90px; display: block; }
+.login-onda polyline {
+  stroke-dasharray: 700; stroke-dashoffset: 700;
+  animation: dibujar 2.4s ease-out 0.3s forwards;
+}
+@keyframes dibujar { to { stroke-dashoffset: 0; } }
+
+/* ---- Formulario ---- */
+.login-form { padding: 2.5rem 2.25rem 2rem; display: flex; flex-direction: column; justify-content: center; }
+.insignia {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--verde-claro); color: var(--verde-oscuro);
+  border: 1px solid var(--borde); border-radius: 999px;
+  padding: 0.2rem 0.75rem; font-size: 0.8rem; font-weight: 700;
+}
+.login-form h1 { font-size: 1.8rem; margin: 0.9rem 0 0.2rem; }
+.login-form .suave { margin: 0 0 0.5rem; }
+
+.login-form label { display: block; margin-top: 1.1rem; font-weight: 600; font-size: 0.95rem; }
+
+.entrada { position: relative; margin-top: 0.35rem; }
+.entrada svg.icono { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--suave); pointer-events: none; }
+.entrada input {
+  width: 100%; padding: 0.85rem 0.9rem 0.85rem 2.7rem;
+  font: inherit; font-size: 1rem; color: var(--texto);
+  background: #f7faf7; border: 1.5px solid var(--borde); border-radius: 12px;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.entrada input:focus { outline: none; background: #fff; border-color: var(--verde); box-shadow: 0 0 0 4px rgba(47, 111, 62, 0.15); }
+.entrada.con-boton input { padding-right: 5.4rem; }
+
+.ver-clave {
+  position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+  background: none; border: 0; border-radius: 8px; padding: 0.4rem 0.65rem;
+  font: inherit; font-size: 0.85rem; font-weight: 700; color: var(--verde-oscuro); cursor: pointer;
+}
+.ver-clave:hover { background: var(--verde-claro); }
+
+.login-opciones { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem 1rem; flex-wrap: wrap; margin-top: 1rem; }
+.login-form .recordar { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-weight: 500; font-size: 0.92rem; cursor: pointer; }
+.login-form .recordar input { width: 18px; height: 18px; margin: 0; accent-color: var(--verde); }
+.enlace-simple { background: none; border: 0; padding: 0; font: inherit; font-size: 0.92rem; font-weight: 600; color: var(--verde-oscuro); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+.ayuda-clave { background: #fff8e1; border: 1px solid #f0dca0; border-radius: 12px; padding: 0.75rem 0.95rem; margin-top: 0.9rem; font-size: 0.92rem; }
+.ayuda-clave[hidden] { display: none; }
+
+.login-form .error { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: flex-start; }
+
+.boton-login {
+  width: 100%; margin-top: 1.4rem; padding: 0.95rem 1rem;
+  font: inherit; font-size: 1.05rem; font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, #3b8a4d, #2f6f3e);
+  border: 0; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 8px 20px rgba(47, 111, 62, 0.3);
+  transition: transform 0.1s, box-shadow 0.15s, filter 0.15s;
+}
+.boton-login:hover { filter: brightness(1.07); box-shadow: 0 10px 24px rgba(47, 111, 62, 0.38); }
+.boton-login:active { transform: translateY(1px); }
+
+.login-pie { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; font-size: 0.85rem; color: var(--suave); }
+.login-pie a { font-weight: 600; }
+.seguro { display: inline-flex; align-items: center; gap: 0.35rem; }
+.seguro svg { width: 15px; height: 15px; }
+
+/* ---- Celular ---- */
+@media (max-width: 760px) {
+  .login-pagina { padding: 0; align-items: stretch; background: #fff; }
+  .login { grid-template-columns: 1fr; border-radius: 0; box-shadow: none; min-height: 100vh; }
+  .login-lado { padding: 1.5rem 1.25rem 0; }
+  .login-lado h2 { font-size: 1.35rem; margin-top: 1rem; }
+  .login-lado p, .login-puntos { display: none; }
+  .login-onda { height: 56px; width: calc(100% + 2.5rem); margin-left: -1.25rem; }
+  .login-form { padding: 1.5rem 1.25rem 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-onda polyline { animation: none; stroke-dashoffset: 0; }
+}

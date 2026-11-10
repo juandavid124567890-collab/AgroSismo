@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block titulo %}Sismos · AgroSismo{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>Sismos registrados
+    <small>Mostrando <span id="cuenta">{{ eventos|length }}</span> de {{ eventos|length }}</small></h1>
+  <a class="boton" href="{% url 'evento_crear' %}"><svg class="ic"><use href="#i-mas"/></svg>Registrar sismo</a>
+</div>
+
+{% if eventos %}
+<div class="buscador" role="search">
+  <svg class="ic"><use href="#i-buscar"/></svg>
+  <input type="search" placeholder="Buscar por unidad, fecha o epicentro..." aria-label="Buscar sismo"
+         data-filtrar="#lista-eventos" data-vacio="#sin-resultados" data-cuenta="#cuenta" autocomplete="off">
+</div>
+{% endif %}
+
+<div class="lista-eventos" id="lista-eventos">
+  {% for e in eventos %}
+    <a class="item" href="{% url 'evento_detalle' e.pk %}"
+       data-buscar="{{ e.fecha_hora|date:'d/m/Y H:i' }} {{ e.unidad.nombre }} {{ e.epicentro }} {{ e.magnitud }}">
+      <div class="fecha-bloque"><strong>{{ e.fecha_hora|date:"d" }}</strong><span>{{ e.fecha_hora|date:"M" }}</span></div>
+      <span class="item-cuerpo">
+        <strong>{{ e.fecha_hora|date:"d/m/Y H:i" }}{% if e.magnitud %} · {{ e.magnitud }} ML{% endif %}</strong>
+        <span class="suave">{{ e.unidad.nombre }}{% if e.epicentro %} · {{ e.epicentro }}{% endif %}</span>
+        <span class="chips">
+          {% if e.magnitud %}<span class="chip {% if e.magnitud >= 5 %}mag-alta{% elif e.magnitud >= 4 %}mag-media{% else %}mag-baja{% endif %}">{{ e.magnitud }} ML</span>{% endif %}
+          <span class="chip">{{ e.num_afectaciones }} afectaci{{ e.num_afectaciones|pluralize:"ón,ones" }}</span>
+        </span>
+      </span>
+      <svg class="ic ir"><use href="#i-flecha"/></svg>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="vacio" id="sin-resultados"{% if eventos %} hidden{% endif %}>
+  <span class="item-icono"><svg class="ic"><use href="#i-sismo"/></svg></span>
+  {% if eventos %}
+    <p>No se encontraron sismos con esa búsqueda.</p>
+  {% else %}
+    <p>Todavía no has registrado ningún sismo. Usa el botón "Registrar sismo".</p>
+    <a class="boton" href="{% url 'evento_crear' %}">Registrar mi primer sismo</a>
+  {% endif %}
+</div>
+{% endblock %}

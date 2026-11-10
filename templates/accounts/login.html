@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}Iniciar sesión · AgroSismo{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/login.css' %}">{% endblock %}
+{% block encabezado %}{% endblock %}
+{% block clase_main %}login-pagina{% endblock %}
+
+{% block contenido %}
+<div class="login">
+  <aside class="login-lado">
+    <div class="login-marca">
+      <img src="{% static 'pwa/icono-192.png' %}?v=2" alt="" width="60" height="60">
+      <span>AgroSismo</span>
+    </div>
+    <h2>Anota los daños que dejó el sismo en tu finca</h2>
+    <p>Así tendrás todo ordenado para pedir apoyo: qué se dañó, cuánto perdiste y fotos que lo comprueban.</p>
+    <ul class="login-puntos">
+      <li>Anota qué se dañó en cada finca</li>
+      <li>Guarda fotos como prueba</li>
+      <li>Descarga un reporte en PDF</li>
+    </ul>
+    <svg class="login-onda" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,50 70,50 95,12 125,82 160,6 195,76 225,30 250,50 400,50"
+                fill="none" stroke="#fff" stroke-opacity="0.9" stroke-width="3.5"
+                stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>
+  </aside>
+
+  <section class="login-form">
+    <span class="insignia">🔒 Acceso seguro</span>
+    <h1>Bienvenido de nuevo</h1>
+    <p class="suave">Inicia sesión para registrar y consultar las afectaciones de tu finca.</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="error" role="alert">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <label for="{{ form.username.id_for_label }}">Nombre de usuario</label>
+      <div class="entrada">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        <input type="text" name="username" id="{{ form.username.id_for_label }}"
+               value="{{ form.username.value|default:'' }}" placeholder="tu_usuario"
+               autocomplete="username" autocapitalize="none" autofocus required>
+      </div>
+
+      <label for="{{ form.password.id_for_label }}">Contraseña</label>
+      <div class="entrada con-boton">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <input type="password" name="password" id="{{ form.password.id_for_label }}"
+               placeholder="••••••••" autocomplete="current-password" required>
+        <button type="button" class="ver-clave" id="ver-clave" aria-pressed="false">Mostrar</button>
+      </div>
+
+      <div class="login-opciones">
+        <label class="recordar"><input type="checkbox" name="recordarme" value="1"> Mantener sesión iniciada</label>
+        <a class="enlace-simple" href="{% url 'recuperar' %}">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+      <button type="submit" class="boton-login">Iniciar sesión</button>
+    </form>
+    <p class="login-ayuda"><a class="enlace-simple" href="{% url 'ayuda' %}">¿Necesitas ayuda?</a></p>
+
+    <div class="login-pie">
+      <a href="{% url 'landing' %}">← Volver al inicio</a>
+      <span class="seguro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>
+        Conexión protegida
+      </span>
+    </div>
+  </section>
+</div>
+
+<script>
+  (function () {
+    var campo = document.getElementById("{{ form.password.id_for_label }}");
+    var boton = document.getElementById("ver-clave");
+    boton.addEventListener("click", function () {
+      var visible = campo.type === "text";
+      campo.type = visible ? "password" : "text";
+      boton.textContent = visible ? "Mostrar" : "Ocultar";
+      boton.setAttribute("aria-pressed", String(!visible));
+    });
+  })();
+</script>
+{% endblock %}

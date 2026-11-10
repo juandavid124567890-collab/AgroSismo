@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load formato %}
+
+{% block titulo %}Afectación · AgroSismo{% endblock %}
+
+{% block contenido %}
+<a class="volver" href="{% url 'evento_detalle' afectacion.evento.pk %}"><svg class="ic"><use href="#i-flecha"/></svg>Sismo del {{ afectacion.evento.fecha_hora|date:"d/m/Y H:i" }}</a>
+
+<section class="ficha s-{{ afectacion.severidad|lower }}">
+  <div class="ficha-texto">
+    <h1>
+      {{ afectacion.tipo_dano_texto }}
+      <span class="sev sev-{{ afectacion.severidad|lower }}">{{ afectacion.get_severidad_display }}</span>
+    </h1>
+    <div class="chips">
+      <span class="chip">{{ afectacion.unidad.nombre }}</span>
+      <span class="chip">{{ afectacion.area_afectada_ha|ha }} ha</span>
+    </div>
+  </div>
+  <a class="boton boton-secundario" href="{% url 'afectacion_editar' afectacion.pk %}">Editar</a>
+</section>
+
+<section class="tarjeta">
+  <dl class="datos">
+    <dt>Unidad agrícola</dt>
+    <dd><a href="{% url 'unidad_detalle' afectacion.unidad.pk %}">{{ afectacion.unidad.nombre }}</a></dd>
+    <dt>Elemento afectado</dt>
+    <dd>{{ afectacion.get_elemento_display }}</dd>
+    {% if afectacion.cultivo %}
+      <dt>Cultivo</dt>
+      <dd>{{ afectacion.cultivo.tipo }}</dd>
+    {% endif %}
+    <dt>Área afectada</dt>
+    <dd>{{ afectacion.area_afectada_ha|ha }} ha</dd>
+    {% if afectacion.ubicacion_texto %}
+      <dt>Ubicación</dt>
+      <dd>{{ afectacion.ubicacion_texto }}</dd>
+    {% endif %}
+    {% if afectacion.observaciones %}
+      <dt>Observaciones</dt>
+      <dd>{{ afectacion.observaciones|linebreaksbr }}</dd>
+    {% endif %}
+  </dl>
+</section>
+
+<section class="tarjeta">
+  <h2>Pérdidas estimadas</h2>
+  {% for p in perdidas %}
+    <p class="perdida">
+      <strong>{{ p.cantidad }} {{ p.get_unidad_medida_display|lower }}</strong>
+      <span>{{ p.valor_estimado_cop|cop }} COP</span>
+    </p>
+  {% empty %}
+    <p class="suave">No se registraron pérdidas para esta afectación.</p>
+  {% endfor %}
+  <p class="suave">Son estimaciones del productor, no una valoración técnica oficial.</p>
+</section>
+
+<section class="tarjeta">
+  <div class="encabezado">
+    <h2>Fotografías</h2>
+    <a class="boton" href="{% url 'evidencia_agregar' afectacion.pk %}"><svg class="ic"><use href="#i-mas"/></svg>Agregar fotografía</a>
+  </div>
+  {% if evidencias %}
+    <div class="galeria">
+      {% for ev in evidencias %}
+        <figure class="foto">
+          <a href="{% url 'evidencia_archivo' ev.pk %}" target="_blank" rel="noopener">
+            <img src="{% url 'evidencia_archivo' ev.pk %}" alt="{{ ev.descripcion|default:'Fotografía de la afectación' }}" loading="lazy">
+          </a>
+          {% if ev.descripcion %}<figcaption>{{ ev.descripcion }}</figcaption>{% endif %}
+          <form method="post" action="{% url 'evidencia_eliminar' ev.pk %}" data-confirmar="¿Quitar esta fotografía?">
+            {% csrf_token %}
+            <button type="submit" class="enlace-boton">Quitar</button>
+          </form>
+        </figure>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="suave">Todavía no hay fotografías. Agrega una como evidencia del daño.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block titulo %}Usuarios · AgroSismo{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>Gestión de usuarios
+    <small>Administra el acceso de los productores a AgroSismo.</small></h1>
+  <div class="acciones" style="margin:0">
+    {% if user.es_desarrollador %}<a class="boton boton-secundario" href="{% url 'fincas' %}">Fincas</a>{% endif %}
+    <a class="boton boton-secundario" href="{% url 'actividad' %}">Bitácora</a>
+    <a class="boton" href="{% url 'usuario_crear' %}"><svg class="ic"><use href="#i-mas"/></svg>Nueva cuenta</a>
+  </div>
+</div>
+
+{% if solicitudes %}
+<section class="tarjeta solicitudes">
+  <h2>🔑 Solicitudes de contraseña ({{ solicitudes|length }})</h2>
+  {% for sol in solicitudes %}
+    <div class="fila">
+      <span>
+        <strong>@{{ sol.usuario.username }}</strong> · {{ sol.usuario.get_full_name|default:"sin nombre" }}
+        <span class="suave">· {{ sol.creado_en|date:"d/m/Y H:i" }}</span>
+        {% if sol.contacto %}<br><span class="suave">Contacto: {{ sol.contacto }}</span>{% endif %}
+      </span>
+      <span class="usuario-acciones">
+        <form method="post" action="{% url 'usuario_clave' sol.usuario.pk %}" data-confirmar="¿Restablecer la contraseña de {{ sol.usuario.username }}?">
+          {% csrf_token %}<button type="submit" class="boton">Restablecer clave</button>
+        </form>
+        <form method="post" action="{% url 'solicitud_descartar' sol.pk %}" data-confirmar="¿Descartar esta solicitud sin cambiar la contraseña?">
+          {% csrf_token %}<button type="submit" class="boton boton-secundario">Descartar</button>
+        </form>
+      </span>
+    </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="resumen">
+  <div class="dato"><span class="numero" data-contar="{{ resumen.total }}">{{ resumen.total }}</span><span>Cuentas en total</span></div>
+  <div class="dato"><span class="numero" data-contar="{{ resumen.activos }}">{{ resumen.activos }}</span><span>Activas</span></div>
+  <div class="dato"><span class="numero" data-contar="{{ resumen.inactivos }}">{{ resumen.inactivos }}</span><span>Desactivadas</span></div>
+</section>
+
+<form method="get" class="buscador" role="search">
+  <svg class="ic"><use href="#i-buscar"/></svg>
+  <input type="search" name="q" value="{{ q }}" placeholder="Buscar por nombre, usuario o correo..." aria-label="Buscar usuario">
+  {% if estado %}<input type="hidden" name="estado" value="{{ estado }}">{% endif %}
+</form>
+
+<div class="chips-sev" aria-label="Filtrar por estado">
+  <a href="?{% if q %}q={{ q|urlencode }}{% endif %}" class="{% if not estado %}on{% endif %}">Todas</a>
+  <a href="?estado=activos{% if q %}&amp;q={{ q|urlencode }}{% endif %}" class="{% if estado == 'activos' %}on{% endif %}">Activas</a>
+  <a href="?estado=inactivos{% if q %}&amp;q={{ q|urlencode }}{% endif %}" class="{% if estado == 'inactivos' %}on{% endif %}">Desactivadas</a>
+</div>
+
+{% for u in pagina %}
+  <article class="usuario-fila{% if not u.is_active %} inactivo{% endif %}">
+    <span class="avatar grande">{{ u.username|slice:":1"|upper }}</span>
+    <div class="usuario-datos">
+      <strong>{{ u.get_full_name|default:u.username }}</strong>
+      <span class="suave">@{{ u.username }}{% if u.email %} · {{ u.email }}{% endif %}</span>
+      <span class="chips">
+        <span class="chip">{{ u.get_rol_display }}</span>
+        {% if u.finca %}<span class="chip">{{ u.finca.nombre }}</span>{% elif user.es_desarrollador %}<span class="chip">Sin finca</span>{% endif %}
+        {% if u.is_active %}<span class="chip est-ok">Activa</span>{% else %}<span class="chip est-error">Desactivada</span>{% endif %}
+        <span class="chip">Creada {{ u.date_joined|date:"d/m/Y" }}</span>
+      </span>
+    </div>
+    <div class="usuario-acciones">
+      <a class="boton boton-secundario" href="{% url 'usuario_editar' u.pk %}">Editar</a>
+      <form method="post" action="{% url 'usuario_clave' u.pk %}" data-confirmar="¿Restablecer la contraseña de {{ u.username }}? La anterior dejará de funcionar.">
+        {% csrf_token %}<button type="submit" class="boton boton-secundario">Restablecer clave</button>
+      </form>
+      {% if u.pk != user.pk %}
+      <form method="post" action="{% url 'usuario_estado' u.pk %}" data-confirmar="{% if u.is_active %}¿Desactivar la cuenta de {{ u.username }}? No podrá iniciar sesión, pero sus datos se conservan.{% else %}¿Reactivar la cuenta de {{ u.username }}?{% endif %}">
+        {% csrf_token %}<button type="submit" class="boton boton-secundario {% if u.is_active %}peligro{% endif %}">{% if u.is_active %}Desactivar{% else %}Reactivar{% endif %}</button>
+      </form>
+      {% endif %}
+    </div>
+  </article>
+{% empty %}
+  <div class="vacio">
+    <span class="item-icono"><svg class="ic"><use href="#i-usuarios"/></svg></span>
+    <p>No se encontraron cuentas con esos criterios.</p>
+  </div>
+{% endfor %}
+
+{% if pagina.has_other_pages %}
+  <nav class="paginas">
+    {% if pagina.has_previous %}
+      <a class="boton boton-secundario" href="?{{ querystring }}{% if querystring %}&amp;{% endif %}page={{ pagina.previous_page_number }}">&larr; Anterior</a>
+    {% else %}<span></span>{% endif %}
+    <span class="suave">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}
+      <a class="boton boton-secundario" href="?{{ querystring }}{% if querystring %}&amp;{% endif %}page={{ pagina.next_page_number }}">Siguiente &rarr;</a>
+    {% else %}<span></span>{% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

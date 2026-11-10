@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}{{ titulo }} · AgroSismo{% endblock %}
+
+{% block contenido %}
+<a class="volver" href="{{ volver }}"><svg class="ic"><use href="#i-flecha"/></svg>Volver</a>
+
+<section class="formulario formulario-ancho">
+  <h1>{{ titulo }}</h1>
+  <p class="suave nota-campos">Los campos con <span class="req">*</span> son <strong>obligatorios</strong>. Los que dicen <span class="opc">(opcional)</span> puedes dejarlos vacíos.</p>
+  <form method="post" novalidate data-cargando="Guardando..."{% if con_archivos %} enctype="multipart/form-data"{% endif %}>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="error" role="alert">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+    {% for campo in form %}{% include "includes/campo.html" with marcar_opcional=True %}{% endfor %}
+    <div class="acciones acciones-fijas">
+      <button type="submit" class="boton">Guardar</button>
+      <a class="boton boton-secundario" href="{{ volver }}">Cancelar</a>
+    </div>
+  </form>
+  {% if form.clave %}<script src="{% static 'js/clave.js' %}?v=1" defer></script>{% endif %}
+  {% if divipola %}
+    {{ divipola|json_script:"divipola-datos" }}
+    <script src="{% static 'js/divipola.js' %}?v=12" defer></script>
+  {% endif %}
+  {% if tipos_cultivo %}
+    <datalist id="tipos-cultivo">
+      {% for t in tipos_cultivo %}<option value="{{ t }}">{% endfor %}
+    </datalist>
+  {% endif %}
+</section>
+{% endblock %}

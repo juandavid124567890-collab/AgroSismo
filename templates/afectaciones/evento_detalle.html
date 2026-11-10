@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load formato %}
+
+{% block titulo %}Sismo {{ evento.fecha_hora|date:"d/m/Y" }} · AgroSismo{% endblock %}
+
+{% block contenido %}
+<a class="volver" href="{% url 'eventos' %}"><svg class="ic"><use href="#i-flecha"/></svg>Sismos registrados</a>
+
+<section class="ficha">
+  <div class="fecha-bloque"><strong>{{ evento.fecha_hora|date:"d" }}</strong><span>{{ evento.fecha_hora|date:"M" }}</span></div>
+  <div class="ficha-texto">
+    <h1>Sismo del {{ evento.fecha_hora|date:"d/m/Y H:i" }}</h1>
+    <div class="chips">
+      {% if evento.magnitud %}<span class="chip {% if evento.magnitud >= 5 %}mag-alta{% elif evento.magnitud >= 4 %}mag-media{% else %}mag-baja{% endif %}">{{ evento.magnitud }} ML</span>{% endif %}
+      <span class="chip">{{ evento.unidad.nombre }}</span>
+    </div>
+  </div>
+  <a class="boton boton-secundario" href="{% url 'evento_editar' evento.pk %}">Editar</a>
+</section>
+
+<section class="tarjeta">
+  <dl class="datos">
+    <dt>Unidad agrícola</dt>
+    <dd><a href="{% url 'unidad_detalle' evento.unidad.pk %}">{{ evento.unidad.nombre }}</a></dd>
+    <dt>Magnitud</dt>
+    <dd>{% if evento.magnitud %}{{ evento.magnitud }} ML{% else %}<span class="suave">No registrada</span>{% endif %}</dd>
+    <dt>Epicentro</dt>
+    <dd>{% if evento.epicentro %}{{ evento.epicentro }}{% else %}<span class="suave">No registrado</span>{% endif %}</dd>
+    {% if evento.observaciones %}
+      <dt>Observaciones</dt>
+      <dd>{{ evento.observaciones|linebreaksbr }}</dd>
+    {% endif %}
+  </dl>
+</section>
+
+<section class="tarjeta">
+  <div class="encabezado">
+    <h2>Afectaciones</h2>
+    <a class="boton" href="{% url 'afectacion_crear' evento.pk %}"><svg class="ic"><use href="#i-mas"/></svg>Registrar afectación</a>
+  </div>
+  {% for a in afectaciones %}
+    <a class="afect s-{{ a.severidad|lower }}" href="{% url 'afectacion_detalle' a.pk %}">
+      <span class="afect-top">
+        <strong>{{ a.tipo_dano_texto }} · {{ a.get_elemento_display }}</strong>
+        <span class="sev sev-{{ a.severidad|lower }}">{{ a.get_severidad_display }}</span>
+      </span>
+      <span class="suave">{{ a.area_afectada_ha|ha }} ha</span>
+    </a>
+  {% empty %}
+    <p class="suave">Este sismo aún no tiene afectaciones registradas.</p>
+  {% endfor %}
+</section>
+{% endblock %}

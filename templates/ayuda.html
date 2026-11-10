@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block titulo %}Ayuda · AgroSismo{% endblock %}
+
+{% block contenido %}
+<div class="ayuda">
+  <h1>Ayuda</h1>
+  <p class="suave">Aquí están las dudas más comunes y cómo resolverlas.</p>
+  <p><a class="boton" href="{% url 'manual' %}">Descargar el manual de usuario (PDF)</a></p>
+  <input type="search" id="ayuda-buscar" class="ayuda-buscar" placeholder="Escribe lo que necesitas, por ejemplo: foto, contraseña, internet" aria-label="Buscar en la ayuda">
+  <p class="ayuda-vacio suave" id="ayuda-vacio">No encontramos nada con esas palabras. Prueba con otra o escríbenos por WhatsApp.</p>
+
+  {% for s in secciones %}
+  <section class="ayuda-seccion" id="{{ s.id }}">
+    <h2>{{ s.titulo }}</h2>
+    {% for pregunta, texto, pasos in s.preguntas %}
+    <details class="ayuda-item">
+      <summary>{{ pregunta }}</summary>
+      <div class="respuesta">
+        <p>{{ texto }}</p>
+        {% if pasos %}<ol>{% for p in pasos %}<li>{{ p }}</li>{% endfor %}</ol>{% endif %}
+      </div>
+    </details>
+    {% endfor %}
+  </section>
+  {% endfor %}
+
+  <section class="ayuda-contacto">
+    <h2>¿No encontraste lo que buscabas?</h2>
+    <p>Escríbenos y te ayudamos.</p>
+    <a class="boton-whatsapp" href="{{ whatsapp_url }}" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+  </section>
+</div>
+
+<script>
+(function () {
+  var caja = document.getElementById("ayuda-buscar");
+  var vacio = document.getElementById("ayuda-vacio");
+  function norm(t) { return t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  caja.addEventListener("input", function () {
+    var q = norm(caja.value.trim()), hay = 0;
+    document.querySelectorAll(".ayuda-item").forEach(function (d) {
+      var ok = !q || norm(d.textContent).indexOf(q) !== -1;
+      d.style.display = ok ? "" : "none";
+      d.open = !!q && ok;
+      if (ok) hay++;
+    });
+    document.querySelectorAll(".ayuda-seccion").forEach(function (s) {
+      s.style.display = s.querySelector(".ayuda-item:not([style*='none'])") ? "" : "none";
+    });
+    vacio.style.display = hay ? "none" : "block";
+  });
+})();
+</script>
+{% endblock %}

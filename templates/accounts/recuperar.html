@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}Recuperar contraseña · AgroSismo{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/login.css' %}">{% endblock %}
+{% block encabezado %}{% endblock %}
+{% block clase_main %}login-pagina{% endblock %}
+
+{% block contenido %}
+<div class="login un-panel">
+  <section class="login-form">
+    <span class="insignia">🔑 Recuperar acceso</span>
+    <h1>¿Olvidaste tu contraseña?</h1>
+    <p class="suave">Escribe tu nombre de usuario. El administrador de AgroSismo recibirá tu solicitud y te entregará una contraseña nueva.</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.errors %}
+        <div class="error" role="alert">Escribe tu nombre de usuario para continuar.</div>
+      {% endif %}
+
+      <label for="{{ form.username.id_for_label }}">Nombre de usuario</label>
+      <div class="entrada">{{ form.username }}</div>
+
+      <label for="{{ form.contacto.id_for_label }}">{{ form.contacto.label }}</label>
+      <div class="entrada">{{ form.contacto }}</div>
+      <p class="suave" style="font-size:.88rem;margin:.4rem 0 0">Así el administrador sabrá cómo entregarte la nueva contraseña.</p>
+
+      <button type="submit" class="boton-login">Enviar solicitud</button>
+    </form>
+
+    <div class="login-pie">
+      <a href="{% url 'login' %}">← Volver a iniciar sesión</a>
+    </div>
+  </section>
+</div>
+{% endblock %}

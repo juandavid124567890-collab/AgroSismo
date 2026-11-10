@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load formato %}
+
+{% block titulo %}{{ unidad.nombre }} · AgroSismo{% endblock %}
+
+{% block contenido %}
+<a class="volver" href="{% url 'unidades' %}"><svg class="ic"><use href="#i-flecha"/></svg>Mis unidades agrícolas</a>
+
+<section class="ficha">
+  <span class="item-icono"><svg class="ic"><use href="#i-campo"/></svg></span>
+  <div class="ficha-texto">
+    <h1>{{ unidad.nombre }}</h1>
+    <div class="chips">
+      <span class="chip">{{ unidad.area_ha|ha }} ha</span>
+      <span class="chip">{{ cultivos|length }} cultivo{{ cultivos|length|pluralize }}</span>
+    </div>
+  </div>
+  <a class="boton boton-secundario" href="{% url 'unidad_editar' unidad.pk %}">Editar</a>
+</section>
+
+<section class="tarjeta">
+  <dl class="datos">
+    <dt>Ubicación</dt>
+    <dd>
+      {% if unidad.vereda %}{{ unidad.vereda }}, {% endif %}{{ unidad.municipio }}{% if unidad.municipio and unidad.departamento %}, {% endif %}{{ unidad.departamento }}
+      {% if not unidad.vereda and not unidad.municipio and not unidad.departamento %}<span class="suave">Sin registrar</span>{% endif %}
+    </dd>
+    <dt>Área</dt>
+    <dd>{{ unidad.area_ha|ha }} ha</dd>
+  </dl>
+</section>
+
+<section class="tarjeta">
+  <div class="encabezado">
+    <h2>Cultivos</h2>
+    <a class="boton" href="{% url 'cultivo_crear' unidad.pk %}"><svg class="ic"><use href="#i-mas"/></svg>Agregar cultivo</a>
+  </div>
+  {% for c in cultivos %}
+    <div class="fila">
+      <span>
+        <strong>{{ c.tipo }}</strong>{% if c.area_ha %} · {{ c.area_ha|ha }} ha{% endif %}
+        {% if not c.activo %}<span class="etiqueta">Inactivo</span>{% endif %}
+      </span>
+      <a class="enlace-accion" href="{% url 'cultivo_editar' c.pk %}">Editar</a>
+    </div>
+  {% empty %}
+    <p class="suave">Esta unidad aún no tiene cultivos.</p>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block titulo %}Inicio · AgroSismo{% endblock %}
+
+{% block contenido %}
+<section class="bienvenida">
+  <h1>Hola, {{ user.first_name|default:user.username }}</h1>
+  <p>Resumen de tu actividad en AgroSismo. Hoy es {% now "l j \d\e F" %}.</p>
+  <div class="acciones">
+    <a class="boton" href="{% url 'evento_crear' %}"><svg class="ic"><use href="#i-mas"/></svg>Registrar sismo</a>
+    <a class="boton boton-secundario" href="{% url 'registro_rapido' %}">Registro rápido</a>
+    <a class="boton boton-secundario" href="{% url 'reporte' %}">Generar reporte</a>
+  </div>
+  <svg class="onda" viewBox="0 0 400 46" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,26 80,26 100,6 130,42 165,4 200,40 230,16 255,26 400,26" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>
+</section>
+
+<section class="stats" aria-label="Resumen">
+  <a class="stat" href="{% url 'unidades' %}">
+    <span class="stat-icono"><svg class="ic"><use href="#i-campo"/></svg></span>
+    <span><span class="numero" data-contar="{{ total_unidades }}">{{ total_unidades }}</span><span class="etq">Unidades agrícolas</span></span>
+  </a>
+  <a class="stat" href="{% url 'eventos' %}">
+    <span class="stat-icono"><svg class="ic"><use href="#i-sismo"/></svg></span>
+    <span><span class="numero" data-contar="{{ eventos_recientes }}">{{ eventos_recientes }}</span><span class="etq">Sismos registrados (últimos 30 días)</span></span>
+  </a>
+  <a class="stat" href="{% url 'historial' %}">
+    <span class="stat-icono"><svg class="ic"><use href="#i-historial"/></svg></span>
+    <span><span class="numero" data-contar="{{ total_afectaciones }}">{{ total_afectaciones }}</span><span class="etq">Afectaciones registradas</span></span>
+  </a>
+</section>
+
+<section class="est-bloque" aria-label="Estadísticas de tus registros">
+  <div class="est-cab">
+    <h2>Resumen de tus registros</h2>
+    {% if est.hay_datos %}<span class="suave">Pérdida estimada total <strong>{{ est.perdida_total }}</strong> · Área afectada <strong>{{ est.area_total }} ha</strong></span>{% endif %}
+  </div>
+  {% if est.hay_datos %}
+  <div class="est-graficas">
+    <article class="tarjeta est-grafica">
+      <h3>Severidad de los daños</h3>
+      <div class="dona-fila">
+        <svg class="dona" width="150" height="150" viewBox="0 0 42 42" role="img" aria-label="Distribución de afectaciones por severidad">
+          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#e8efe9" stroke-width="6"/>
+          {% for s in est.severidad %}
+          <circle class="dona-arco" cx="21" cy="21" r="15.9155" fill="none" stroke="{{ s.color }}" stroke-width="6"
+                  stroke-dasharray="{{ s.trazo }} {{ s.resto }}" stroke-dashoffset="{{ s.desfase }}"/>
+          {% endfor %}
+          <text x="21" y="21.5" text-anchor="middle" class="dona-num" font-size="8" font-weight="800" fill="#1f4d2b">{{ est.total }}</text>
+          <text x="21" y="26.5" text-anchor="middle" class="dona-etq" font-size="2.6" fill="#5b6b60">afectaciones</text>
+        </svg>
+        <ul class="leyenda">
+          {% for s in est.severidad %}<li><i style="background:{{ s.color }}"></i>{{ s.etiqueta }}<b>{{ s.n }}</b><small>{{ s.porcentaje }}%</small></li>{% endfor %}
+        </ul>
+      </div>
+    </article>
+
+    <article class="tarjeta est-grafica">
+      <h3>Tipos de daño</h3>
+      <ul class="barras-h">
+        {% for b in est.tipos %}<li><span>{{ b.etiqueta }}</span><div class="est-pista"><div style="width:{{ b.ancho }}%"></div></div><b>{{ b.texto }}</b></li>{% endfor %}
+      </ul>
+    </article>
+
+    <article class="tarjeta est-grafica" id="grafica-meses">
+      <div class="est-encabezado">
+        <h3>Afectaciones por mes <small class="suave">({{ est.periodo_texto }})</small></h3>
+        <nav class="est-selector" aria-label="Periodo de la gráfica">
+          {% for o in est.opciones_periodo %}<a href="?periodo={{ o.clave }}#grafica-meses"{% if o.activa %} class="activa" aria-current="true"{% endif %}>{{ o.texto }}</a>{% endfor %}
+        </nav>
+      </div>
+      {% if est.meses_total %}
+      <div class="barras-v{% if est.n_barras > 6 %} muchos{% endif %}">
+        {% for m in est.meses %}<div class="col"><b>{{ m.n }}</b><div class="est-barra"><div style="height:{{ m.alto }}%"></div></div><span>{{ m.etiqueta }}</span></div>{% endfor %}
+      </div>
+      {% else %}<p class="suave">No hay afectaciones en los {{ est.periodo_texto }}.</p>{% endif %}
+    </article>
+
+    <article class="tarjeta est-grafica">
+      <h3>Pérdida estimada por unidad</h3>
+      {% if est.perdida_unidades %}
+      <ul class="barras-h">
+        {% for b in est.perdida_unidades %}<li><span>{{ b.etiqueta }}</span><div class="est-pista"><div style="width:{{ b.ancho }}%"></div></div><b>{{ b.texto }}</b></li>{% endfor %}
+      </ul>
+      {% else %}<p class="suave">Aún no has anotado pérdidas económicas.</p>{% endif %}
+    </article>
+  </div>
+  {% else %}
+  <div class="tarjeta vacio-est">
+    <svg viewBox="0 0 120 40" aria-hidden="true"><polyline points="0,22 25,22 33,6 45,36 58,4 70,34 80,14 90,22 120,22" fill="none" stroke="#9fc7a8" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    <p><strong>Aquí verás tus estadísticas.</strong> Cuando registres tu primera afectación aparecerán gráficas de severidad, tipos de daño, actividad por mes y pérdidas.</p>
+  </div>
+  {% endif %}
+</section>
+
+<div class="dos-col">
+  <div>
+    <section class="tarjeta">
+      <h2>Último sismo registrado</h2>
+      {% if ultimo_evento %}
+        <a class="ultimo" href="{% url 'evento_detalle' ultimo_evento.pk %}" style="text-decoration:none;color:inherit">
+          <div class="fecha-bloque"><strong>{{ ultimo_evento.fecha_hora|date:"d" }}</strong><span>{{ ultimo_evento.fecha_hora|date:"M" }}</span></div>
+          <div>
+            <p style="margin:0"><strong>{{ ultimo_evento.fecha_hora|date:"d/m/Y H:i" }}</strong> · {{ ultimo_evento.unidad.nombre }}
+              {% if ultimo_evento.magnitud %}· {{ ultimo_evento.magnitud }} ML{% endif %}</p>
+            <span class="suave">Ver detalle y afectaciones →</span>
+          </div>
+        </a>
+      {% else %}
+        <p class="suave">Todavía no has registrado ningún sismo.</p>
+      {% endif %}
+    </section>
+
+    <section class="tarjeta">
+      <h2>Accesos rápidos</h2>
+      <div class="atajos">
+        <a class="atajo" href="{% url 'unidades' %}"><svg class="ic"><use href="#i-campo"/></svg>Mis unidades agrícolas<small>Unidades y cultivos</small></a>
+        <a class="atajo" href="{% url 'evento_crear' %}"><svg class="ic"><use href="#i-mas"/></svg>Registrar sismo<small>Anota un nuevo evento</small></a>
+        <a class="atajo" href="{% url 'historial' %}"><svg class="ic"><use href="#i-historial"/></svg>Historial<small>Busca y filtra</small></a>
+        <a class="atajo" href="{% url 'reporte' %}"><svg class="ic"><use href="#i-reporte"/></svg>Reportes<small>Descarga en PDF</small></a>
+      </div>
+    </section>
+  </div>
+
+  <div>
+    <section class="tarjeta">
+      <h2>Primeros pasos</h2>
+      <p class="suave" style="margin:.1rem 0 .5rem">{{ pasos_hechos }} de 3 completados</p>
+      <div class="progreso"><div style="width: {{ pasos_porcentaje }}%"></div></div>
+      <ul class="pasos-inicio">
+        <li class="{% if paso_unidad %}hecho{% endif %}"><span class="marca-paso">{% if paso_unidad %}<svg class="ic"><use href="#i-check"/></svg>{% else %}1{% endif %}</span><a href="{% url 'unidad_crear' %}">Registra tu primera unidad agrícola</a></li>
+        <li class="{% if paso_sismo %}hecho{% endif %}"><span class="marca-paso">{% if paso_sismo %}<svg class="ic"><use href="#i-check"/></svg>{% else %}2{% endif %}</span><a href="{% url 'evento_crear' %}">Anota un sismo</a></li>
+        <li class="{% if paso_afectacion %}hecho{% endif %}"><span class="marca-paso">{% if paso_afectacion %}<svg class="ic"><use href="#i-check"/></svg>{% else %}3{% endif %}</span><a href="{% url 'eventos' %}">Registra una afectación con fotos</a></li>
+      </ul>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Registro sin conexión</h2>
+      <p class="suave" style="margin:0 0 .8rem">Anota sismos y daños aunque no tengas señal. Se guardan en tu dispositivo.</p>
+      <a class="boton boton-secundario" href="{% url 'registro_rapido' %}">Abrir registro rápido</a>
+    </section>
+
+    {% if user.es_admin %}
+    <section class="tarjeta">
+      <h2>Administración</h2>
+      <p class="suave" style="margin:0 0 .8rem">Crea, edita y desactiva las cuentas de los productores.</p>
+      <div class="acciones" style="margin:0">
+        <a class="boton" href="{% url 'usuarios' %}">Gestionar usuarios{% if solicitudes_pendientes %} · {{ solicitudes_pendientes }} solicitud{{ solicitudes_pendientes|pluralize:"es" }}{% endif %}</a>
+        <a class="boton boton-secundario" href="{% url 'admin:index' %}">Panel técnico</a>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

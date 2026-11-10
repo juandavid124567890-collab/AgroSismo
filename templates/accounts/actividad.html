@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block titulo %}Bitácora · AgroSismo{% endblock %}
+
+{% block contenido %}
+<a class="volver" href="{% url 'usuarios' %}"><svg class="ic"><use href="#i-flecha"/></svg>Gestión de usuarios</a>
+<div class="encabezado">
+  <h1>Bitácora de actividad
+    <small>Registro de las operaciones hechas sobre las cuentas.</small></h1>
+</div>
+
+{% for a in pagina %}
+  <div class="afect">
+    <span class="afect-top">
+      <strong>{{ a.get_accion_display }}{% if a.usuario_objetivo %} · @{{ a.usuario_objetivo.username }}{% endif %}</strong>
+      <span class="suave">{{ a.creado_en|date:"d/m/Y H:i" }}</span>
+    </span>
+    <span class="suave">Por {% if a.administrador %}@{{ a.administrador.username }}{% else %}administrador eliminado{% endif %}{% if a.detalle %} · {{ a.detalle }}{% endif %}</span>
+  </div>
+{% empty %}
+  <div class="vacio"><p>Todavía no hay actividad registrada.</p></div>
+{% endfor %}
+
+{% if pagina.has_other_pages %}
+  <nav class="paginas">
+    {% if pagina.has_previous %}<a class="boton boton-secundario" href="?page={{ pagina.previous_page_number }}">&larr; Anterior</a>{% else %}<span></span>{% endif %}
+    <span class="suave">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}<a class="boton boton-secundario" href="?page={{ pagina.next_page_number }}">Siguiente &rarr;</a>{% else %}<span></span>{% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

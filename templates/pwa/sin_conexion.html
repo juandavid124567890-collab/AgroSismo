@@ -1,0 +1,20 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2f6f3e">
+  <title>Sin conexión · AgroSismo</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+  <main class="contenedor" style="text-align:center;padding-top:3rem">
+    <section class="tarjeta">
+      <h1>Sin conexión a internet</h1>
+      <p>No pudimos cargar esta página porque no hay señal. Los datos que ya guardaste están a salvo.</p>
+      <p class="suave">Pronto podrás registrar sismos y afectaciones aunque no tengas internet.</p>
+      <button type="button" class="boton" onclick="location.reload()">Reintentar</button>
+    </section>
+  </main>
+</body>
+</html>

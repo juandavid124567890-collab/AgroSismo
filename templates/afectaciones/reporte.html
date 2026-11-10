@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load formato %}
+
+{% block titulo %}Reportes · AgroSismo{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>Generar reporte
+    <small>Elige qué afectaciones incluir, revisa la vista previa y expórtala en PDF.</small></h1>
+</div>
+
+<details class="panel-filtros" open>
+  <summary><svg class="ic"><use href="#i-filtros"/></svg>Filtros del reporte</summary>
+  <form method="get" class="filtros">
+    {% if form.non_field_errors %}
+      <div class="error" role="alert">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+    <div class="filtros-campos">
+      {% for campo in form %}{% include "includes/campo.html" %}{% endfor %}
+    </div>
+    <div class="acciones">
+      <button type="submit" class="boton">Ver vista previa</button>
+      {% if request.GET %}
+        <a class="boton boton-secundario" href="{% url 'reporte' %}">Limpiar filtros</a>
+      {% endif %}
+    </div>
+  </form>
+</details>
+
+<section class="tarjeta">
+  <h2>Vista previa del reporte</h2>
+
+  <div class="resumen">
+    <div class="dato"><span class="numero" data-contar="{{ resumen.total }}">{{ resumen.total }}</span><span>Afectaciones</span></div>
+    <div class="dato"><span class="numero" data-contar="{{ resumen.eventos }}">{{ resumen.eventos }}</span><span>Sismos</span></div>
+    <div class="dato"><span class="numero">{{ resumen.area|ha }}</span><span>Hectáreas afectadas</span></div>
+    <div class="dato"><span class="numero">{{ resumen.valor|cop }}</span><span>Pérdidas estimadas (COP)</span></div>
+  </div>
+
+  <h3>Afectaciones por severidad</h3>
+  <div class="barras">
+    {% for etiqueta, cantidad, clase in resumen.por_severidad %}
+      <div class="barra-fila">
+        <span class="nombre"><span class="sev sev-{{ clase }}" style="margin:0">{{ etiqueta }}</span></span>
+        <div class="pista"><div class="{{ clase }}" style="width: {% if resumen.total %}{% widthratio cantidad resumen.total 100 %}{% else %}0{% endif %}%"></div></div>
+        <b>{{ cantidad }}</b>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if resumen.por_unidad %}
+    <h3>Unidades más afectadas</h3>
+    <div class="barras">
+      {% for u in resumen.por_unidad %}
+        <div class="barra-fila">
+          <span class="nombre" title="{{ u.unidad__nombre }}">{{ forloop.counter }}. {{ u.unidad__nombre }}</span>
+          <div class="pista"><div style="width: {% widthratio u.n resumen.total 100 %}%"></div></div>
+          <b>{{ u.n }}</b>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <p class="suave">Las pérdidas son estimaciones registradas por el productor, no una valoración técnica oficial.</p>
+
+  {% if resumen.total and not form.errors %}
+    <form method="post" action="{% url 'reporte_pdf' %}" class="exportar" data-cargando="Generando PDF...">
+      {% csrf_token %}
+      {% for campo in form %}
+        <input type="hidden" name="{{ campo.html_name }}" value="{{ campo.value|default_if_none:'' }}">
+      {% endfor %}
+      <p><strong>Tu reporte está listo.</strong><br><span class="suave">Se descargará como archivo PDF.</span></p>
+      <div class="acciones"><button type="submit" class="boton"><svg class="ic"><use href="#i-pdf"/></svg>Exportar en PDF</button></div>
+    </form>
+  {% elif not resumen.total %}
+    <div class="vacio">
+      <span class="item-icono"><svg class="ic"><use href="#i-reporte"/></svg></span>
+      <p>No hay afectaciones con estos filtros, así que no se puede generar el reporte.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

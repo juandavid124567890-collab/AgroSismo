@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block titulo %}Fincas · AgroSismo{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>Fincas
+    <small>Cada finca tiene su administrador y sus trabajadores, y todos comparten los datos de esa finca.</small></h1>
+  <div class="acciones" style="margin:0">
+    <a class="boton boton-secundario" href="{% url 'usuarios' %}">Usuarios</a>
+    <a class="boton" href="{% url 'finca_crear' %}"><svg class="ic"><use href="#i-mas"/></svg>Nueva finca</a>
+  </div>
+</div>
+
+{% for f in fincas %}
+  <article class="usuario-fila">
+    <span class="avatar grande">{{ f.nombre|slice:":1"|upper }}</span>
+    <div class="usuario-datos">
+      <strong><a href="{% url 'finca_detalle' f.pk %}">{{ f.nombre }}</a></strong>
+      <span class="chips">
+        {% if f.activa %}<span class="chip est-ok">Activa</span>{% else %}<span class="chip est-error">Desactivada</span>{% endif %}
+        <span class="chip">{{ f.num_usuarios }} usuario{{ f.num_usuarios|pluralize }}</span>
+        <span class="chip">{{ f.num_unidades }} unidad{{ f.num_unidades|pluralize:"es" }}</span>
+        <span class="chip">Creada {{ f.creada_en|date:"d/m/Y" }}</span>
+      </span>
+    </div>
+    <div class="usuario-acciones">
+      <a class="boton boton-secundario" href="{% url 'finca_detalle' f.pk %}">Ver</a>
+      <a class="boton boton-secundario" href="{% url 'finca_editar' f.pk %}">Renombrar</a>
+      <a class="boton boton-secundario" href="{% url 'usuario_crear' %}?finca={{ f.pk }}&amp;rol=ADMIN">Añadir usuario</a>
+    </div>
+  </article>
+{% empty %}
+  <div class="vacio">
+    <span class="item-icono"><svg class="ic"><use href="#i-pin"/></svg></span>
+    <p>Aún no hay fincas. Crea la primera.</p>
+  </div>
+{% endfor %}
+{% endblock %}

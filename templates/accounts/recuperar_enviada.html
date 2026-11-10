@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}Solicitud enviada · AgroSismo{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/login.css' %}">{% endblock %}
+{% block encabezado %}{% endblock %}
+{% block clase_main %}login-pagina{% endblock %}
+
+{% block contenido %}
+<div class="login un-panel">
+  <section class="login-form">
+    <span class="ok-grande">✅</span>
+    <h1>Solicitud recibida</h1>
+    <p>Si el usuario existe, el administrador la revisará y te entregará una contraseña nueva.</p>
+    <p class="suave">Si es urgente, comunícate directamente con quien administra AgroSismo.</p>
+    <a class="boton-login" href="{% url 'login' %}" style="display:block;text-align:center;text-decoration:none">Volver a iniciar sesión</a>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2f6f3e">
+  <title>Registro rápido · AgroSismo</title>
+  <link rel="manifest" href="{% url 'manifest' %}">
+  <link rel="icon" href="{% static 'pwa/icono-192.png' %}?v=2">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}">
+  <link rel="stylesheet" href="{% static 'css/rapido.css' %}">
+</head>
+<body class="app rapido">
+  <header class="barra">
+    <a class="marca" href="{% url 'inicio' %}">
+      <img src="{% static 'pwa/icono-192.png' %}?v=2" alt="" width="30" height="30"> AgroSismo
+    </a>
+    <span id="estado-red" class="estado-red">…</span>
+    <a class="boton boton-secundario" href="{% url 'inicio' %}">Volver al inicio</a>
+  </header>
+
+  <main class="contenedor">
+    <div class="encabezado">
+      <h1>Registro rápido
+        <small>Anota un sismo y sus daños aunque no tengas señal.</small></h1>
+    </div>
+
+    <p id="aviso-red" class="aviso-red"></p>
+
+    <div id="sin-base" class="vacio" hidden>
+      <p id="sin-base-texto"></p>
+      <a class="boton" href="{% url 'login' %}">Iniciar sesión</a>
+    </div>
+
+    <form id="formulario" class="tarjeta" novalidate hidden>
+      <div id="errores" class="error" role="alert" hidden></div>
+      <div id="aviso-ok" class="mensaje" role="status" hidden></div>
+
+      <h2>1. Sismo</h2>
+      <div id="bloque-evento-fijo" class="fijo" hidden>
+        <span>Agregando daños al sismo: <strong id="evento-fijo-texto"></strong></span>
+        <button type="button" id="btn-nuevo-sismo" class="enlace-boton">Registrar otro sismo</button>
+      </div>
+      <div class="campo"><label for="unidad">Unidad agrícola *</label><select id="unidad"></select></div>
+      <div class="campo"><label for="fecha">Fecha y hora del sismo *</label><input type="datetime-local" id="fecha"></div>
+      <div class="dos">
+        <div class="campo"><label for="magnitud">Magnitud (ML)</label><input type="number" id="magnitud" step="0.1" min="0" max="10" inputmode="decimal" placeholder="Si la conoces"></div>
+        <div class="campo"><label for="epicentro">Epicentro o referencia</label><input type="text" id="epicentro" maxlength="200" placeholder="Ej: cerca del río"></div>
+      </div>
+
+      <h2>2. Daño</h2>
+      <div class="dos">
+        <div class="campo"><label for="elemento">Elemento afectado *</label><select id="elemento"></select></div>
+        <div class="campo"><label for="tipo_dano">Tipo de daño *</label><select id="tipo_dano"></select></div>
+      </div>
+      <div class="campo" hidden><label for="tipo_dano_otro">¿Cuál otro daño? *</label><input type="text" id="tipo_dano_otro" maxlength="100" placeholder="Ej: Pérdida de suelo fértil"></div>
+      <div class="campo"><label for="cultivo">Cultivo (opcional)</label><select id="cultivo"></select></div>
+      <fieldset class="campo sev-opciones">
+        <legend>Nivel de severidad *</legend>
+        <label class="sev-op leve"><input type="radio" name="severidad" value="LEVE"><span>Leve</span></label>
+        <label class="sev-op moderada"><input type="radio" name="severidad" value="MODERADA"><span>Moderada</span></label>
+        <label class="sev-op grave"><input type="radio" name="severidad" value="GRAVE"><span>Grave</span></label>
+      </fieldset>
+      <div class="campo"><label for="area">Área afectada (ha) *</label><input type="number" id="area" step="0.01" min="0" inputmode="decimal"></div>
+      <div class="campo">
+        <label for="fotos">Fotografías <span class="suave">(opcional · <span id="cuenta-fotos">0 de 10</span>)</span></label>
+        <input type="file" id="fotos" accept="image/*" multiple>
+        <div id="vista-fotos" class="vista-fotos"></div>
+      </div>
+      <div class="campo"><label for="observaciones">Observaciones</label><textarea id="observaciones" rows="3" placeholder="Describe lo que observaste"></textarea></div>
+
+      <h2>3. Pérdida estimada <small class="suave">(opcional)</small></h2>
+      <div class="dos">
+        <div class="campo"><label for="perdida_cantidad">Producción perdida</label><input type="number" id="perdida_cantidad" step="0.01" min="0" inputmode="decimal"></div>
+        <div class="campo"><label for="perdida_unidad">Unidad</label><select id="perdida_unidad"></select></div>
+      </div>
+      <div class="campo"><label for="perdida_valor">Valor estimado (COP)</label><input type="number" id="perdida_valor" step="1" min="0" inputmode="numeric" data-miles="cop"></div>
+
+      <div class="acciones">
+        <button type="submit" class="boton">Guardar en este dispositivo</button>
+        <button type="button" id="btn-otra" class="boton boton-secundario">Guardar y agregar otro daño al mismo sismo</button>
+      </div>
+    </form>
+
+    <section id="lista" class="tarjeta" hidden>
+      <div class="encabezado">
+        <h2>Por enviar (<span id="cuenta-pendientes">0</span>)</h2>
+        <div class="acciones" style="margin:0">
+          <button type="button" id="btn-sync" class="boton">Sincronizar ahora</button>
+          <button type="button" id="btn-limpiar" class="boton boton-secundario" hidden>Limpiar enviados</button>
+        </div>
+      </div>
+      <p id="msg-sync" class="msg-sync" role="status" hidden></p>
+      <p id="sin-pendientes" class="suave">Todavía no has guardado nada en este dispositivo.</p>
+      <div id="pendientes"></div>
+    </section>
+  </main>
+
+  <script src="{% static 'js/offline.js' %}"></script>
+  <script src="{% static 'js/formato.js' %}"></script>
+  <script src="{% static 'js/rapido.js' %}?v=2"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("{% url 'sw' %}", { scope: "/" }).catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
